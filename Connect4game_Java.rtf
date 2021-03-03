@@ -1,0 +1,257 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 ArialMT;}
+{\colortbl;\red255\green255\blue255;\red26\green26\blue26;\red255\green255\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c13333\c13333\c13333;\cssrgb\c100000\c100000\c100000;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28600\viewh18000\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs20 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 import java.util.Arrays;\
+import java.util.Scanner;\
+import java.util.stream.Collectors;\
+import java.util.stream.IntStream;\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 // we are going to create a simple 2-players Connect Four implementation in Java 8\
+public class ConnectFour \{\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // we define characters for players (R for Red, Y for Yellow)\
+\'a0 private static final char[] PLAYERS = \{'R', 'Y'\};\
+\'a0 // dimensions for our board\
+\'a0 private final int width, height;\
+\'a0 // grid for the board\
+\'a0 private final char[][] grid;\
+\'a0 // we store last move made by a player\
+\'a0 private int lastCol = -1, lastTop = -1;\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 public ConnectFour(int w, int h) \{\
+\'a0 \'a0 width = w;\
+\'a0 \'a0 height = h;\
+\'a0 \'a0 grid = new char[h][];\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 // init the grid will blank cell\
+\'a0 \'a0 for (int i = 0; i < h; i++) \{\
+\'a0 \'a0 \'a0 Arrays.fill(grid[i] = new char[w], '.');\
+\'a0 \'a0 \}\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // we use Streams to make a more concise method\'a0\
+\'a0 // for representing the board\
+\'a0 public String toString() \{\
+\'a0 \'a0 return IntStream.range(0, \'a0width).\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0mapToObj(Integer::toString).\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0collect(Collectors.joining()) +\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0"\\n" +\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0Arrays.stream(grid).\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0map(String::new).\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0collect(Collectors.joining("\\n"));\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // get string representation of the row containing\'a0\
+\'a0 // the last play of the user\
+\'a0 public String horizontal() \{\
+\'a0 \'a0 return new String(grid[lastTop]);\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // get string representation fo the col containing\'a0\
+\'a0 // the last play of the user\
+\'a0 public String vertical() \{\
+\'a0 \'a0 StringBuilder sb = new StringBuilder(height);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 for (int h = 0; h < height; h++) \{\
+\'a0 \'a0 \'a0 sb.append(grid[h][lastCol]);\
+\'a0 \'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 return sb.toString();\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // get string representation of the "/" diagonal\'a0\
+\'a0 // containing the last play of the user\
+\'a0 public String slashDiagonal() \{\
+\'a0 \'a0 StringBuilder sb = new StringBuilder(height);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 for (int h = 0; h < height; h++) \{\
+\'a0 \'a0 \'a0 int w = lastCol + lastTop - h;\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 if (0 <= w && w < width) \{\
+\'a0 \'a0 \'a0 \'a0 sb.append(grid[h][w]);\
+\'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 return sb.toString();\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // get string representation of the "\\"\'a0\
+\'a0 // diagonal containing the last play of the user\
+\'a0 public String backslashDiagonal() \{\
+\'a0 \'a0 StringBuilder sb = new StringBuilder(height);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 for (int h = 0; h < height; h++) \{\
+\'a0 \'a0 \'a0 int w = lastCol - lastTop + h;\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 if (0 <= w && w < width) \{\
+\'a0 \'a0 \'a0 \'a0 sb.append(grid[h][w]);\
+\'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 return sb.toString();\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // static method checking if a substring is in str\
+\'a0 public static boolean contains(String str, String substring) \{\
+\'a0 \'a0 return str.indexOf(substring) >= 0;\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // now, we create a method checking if last play is a winning play\
+\'a0 public boolean isWinningPlay() \{\
+\'a0 \'a0 if (lastCol == -1) \{\
+\'a0 \'a0 \'a0 System.err.println("No move has been made yet");\
+\'a0 \'a0 \'a0 return false;\
+\'a0 \'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 char sym = grid[lastTop][lastCol];\
+\'a0 \'a0 // winning streak with the last play symbol\
+\'a0 \'a0 String streak = String.format("%c%c%c%c", sym, sym, sym, sym);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 // check if streak is in row, col,\'a0\
+\'a0 \'a0 // diagonal or backslash diagonal\
+\'a0 \'a0 return contains(horizontal(), streak) ||\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0contains(vertical(), streak) ||\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0contains(slashDiagonal(), streak) ||\'a0\
+\'a0 \'a0 \'a0 \'a0 \'a0 \'a0contains(backslashDiagonal(), streak);\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 // prompts the user for a column, repeating until a valid choice is made\
+\'a0 public void chooseAndDrop(char symbol, Scanner input) \{\
+\'a0 \'a0 do \{\
+\'a0 \'a0 \'a0 System.out.println("\\nPlayer " + symbol + " turn: ");\
+\'a0 \'a0 \'a0 int col = input.nextInt();\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 // check if column is ok\
+\'a0 \'a0 \'a0 if (!(0 <= col && col < width)) \{\
+\'a0 \'a0 \'a0 \'a0 System.out.println("Column must be between 0 and " + (width - 1));\
+\'a0 \'a0 \'a0 \'a0 continue;\
+\'a0 \'a0 \'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 // now we can place the symbol to the first\'a0\
+\'a0 \'a0 \'a0 // available row in the asked column\
+\'a0 \'a0 \'a0 for (int h = height - 1; h >= 0; h--) \{\
+\'a0 \'a0 \'a0 \'a0 if (grid[h][col] == '.') \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 grid[lastTop = h][lastCol = col] = symbol;\
+\'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 // if column is full ==> we need to ask for a new input\
+\'a0 \'a0 \'a0 System.out.println("Column " + col + " is full.");\
+\'a0 \'a0 \} while (true);\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 public static void main(String[] args) \{\
+\'a0 \'a0 // we assemble all the pieces of the puzzle for\'a0\
+\'a0 \'a0 // building our Connect Four Game\
+\'a0 \'a0 try (Scanner input = new Scanner(System.in)) \{\
+\'a0 \'a0 \'a0 // we define some variables for our game like\'a0\
+\'a0 \'a0 \'a0 // dimensions and nb max of moves\
+\'a0 \'a0 \'a0 int height = 6; int width = 8; int moves = height * width;\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 // we create the ConnectFour instance\
+\'a0 \'a0 \'a0 ConnectFour board = new ConnectFour(width, height);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 // we explain users how to enter their choices\
+\'a0 \'a0 \'a0 System.out.println("Use 0-" + (width - 1) + " to choose a column");\
+\'a0 \'a0 \'a0 // we display initial board\
+\'a0 \'a0 \'a0 System.out.println(board);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 // we iterate until max nb moves be reached\
+\'a0 \'a0 \'a0 // simple trick to change player turn at each iteration\
+\'a0 \'a0 \'a0 for (int player = 0; moves-- > 0; player = 1 - player) \{\
+\'a0 \'a0 \'a0 \'a0 // symbol for current player\
+\'a0 \'a0 \'a0 \'a0 char symbol = PLAYERS[player];\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 \'a0 // we ask user to choose a column\
+\'a0 \'a0 \'a0 \'a0 board.chooseAndDrop(symbol, input);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 \'a0 // we display the board\
+\'a0 \'a0 \'a0 \'a0 System.out.println(board);\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \'a0 \'a0 \'a0 \'a0 // we need to check if a player won. If not,\'a0\
+\'a0 \'a0 \'a0 \'a0 // we continue, otherwise, we display a message\
+\'a0 \'a0 \'a0 \'a0 if (board.isWinningPlay()) \{\
+\'a0 \'a0 \'a0 \'a0 \'a0 System.out.println("\\nPlayer " + symbol + " wins!");\
+\'a0 \'a0 \'a0 \'a0 \'a0 return;\
+\'a0 \'a0 \'a0 \'a0 \}\
+\'a0 \'a0 \'a0 \}\
+\'a0 \'a0\'a0\
+\'a0 \'a0 \'a0 System.out.println("Game over. No winner. Try again!");\
+\'a0 \'a0 \}\
+\'a0 \}\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \}\
+}
